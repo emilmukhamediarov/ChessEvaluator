@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using ChessEvaluator.Models;
+using ChessEvaluator.Parsers;
 
 namespace ChessEvaluator
 {
@@ -19,54 +21,18 @@ namespace ChessEvaluator
 
             using JsonDocument document = JsonDocument.Parse(json);
 
-            JsonElement games = document.RootElement.GetProperty("games");
+            ChessComGameParser parser = new();
 
-            await File.WriteAllTextAsync("games.json", json);
+            List<ChessGame> games = parser.Parse(json);
 
-            foreach (JsonElement game in games.EnumerateArray())
+            foreach (ChessGame game in games)
             {
-
-                long endTimestamp = game.GetProperty("end_time").GetInt64();
-
-                DateTimeOffset endDate = DateTimeOffset.FromUnixTimeSeconds(endTimestamp);
-
-
-
-                string? white = game.GetProperty("white")
-                                    .GetProperty("username")
-                                    .GetString();
-
-                int whiteElo = game.GetProperty("white")
-                                    .GetProperty("rating")
-                                    .GetInt32();
-
-                string? whiteResult = game.GetProperty("white")
-                                    .GetProperty("result")
-                                    .GetString();
-
-                string? black = game.GetProperty("black")
-                                    .GetProperty("username")
-                                    .GetString();
-
-                int blackElo = game.GetProperty("black")
-                                    .GetProperty("rating")
-                                    .GetInt32();
-
-                string? blackResult = game.GetProperty("black")
-                                    .GetProperty("result")
-                                    .GetString();
-
-                Console.WriteLine(endDate);
-                Console.WriteLine(white);
-                Console.WriteLine(whiteElo);
-                Console.WriteLine(whiteResult);
-                Console.WriteLine(black);
-                Console.WriteLine(blackElo);
-                Console.WriteLine(blackResult);
-                Console.WriteLine("");
-
+                Console.WriteLine($"{game.White.Username} vs {game.Black.Username}");
+                Console.WriteLine($"{game.White.Rating} - {game.Black.Rating}");
+                Console.WriteLine(game.EndTime);
             }
 
         }
+
+        }
     }
-}
