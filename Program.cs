@@ -35,11 +35,14 @@ namespace ChessEvaluator
             Console.Write("Analysis depth: ");
             int depth = int.Parse(Console.ReadLine()!);
 
-            List<string> analysis = await engine.AnalyzeAsync(replay.CurrentFen, depth);
+            Console.Write("Variations number: ");
+            int multiPv = int.Parse(Console.ReadLine()!);
 
-            foreach (string line in analysis)
+            EngineAnalysis analysis = await engine.AnalyzeAsync(replay.CurrentFen, depth, multiPv);
+
+            foreach (EngineVariation variation in analysis.Variations)
             {
-                Console.WriteLine(line);
+                Console.WriteLine(string.Join(", ", variation.Moves));
             }
 
         }
