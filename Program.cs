@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
-using System.Text.Json;
+﻿using ChessEvaluator.Engines;
 using ChessEvaluator.Models;
 using ChessEvaluator.Parsers;
+using ChessEvaluator.Replay;
+using ChessLite.Parsing;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace ChessEvaluator
 {
@@ -11,25 +14,32 @@ namespace ChessEvaluator
         {
             using HttpClient httpClient = new();
 
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("ChessEvaluator/1.0 (contact: emile.programmer@gmail.com)");
-
             ChessComClient client = new(httpClient);
 
-            string json = await client.GetGamesAsync(
-                "EmilMuhamedyarov", 2026, 10
-            );
-
-            using JsonDocument document = JsonDocument.Parse(json);
+            string json = await client.GetGamesAsync("lioigor", 2026, 10);
 
             ChessComGameParser parser = new();
-
             List<ChessGame> games = parser.Parse(json);
 
-            foreach (ChessGame game in games)
+            GameReplay replay = new(games[^1].Pgn!);
+
+            Console.WriteLine(games[^1].White.Username + " vs " + games[^1].Black.Username);
+
+            for (int i = 0; i < 10; i++)
             {
-                Console.WriteLine($"{game.White.Username} vs {game.Black.Username}");
-                Console.WriteLine($"{game.White.Rating} - {game.Black.Rating}");
-                Console.WriteLine(game.EndTime);
+                replay.Next();
+            }
+
+            StockfishEngine engine = new("Engines/stockfish.exe");
+
+            Console.Write("Analysis depth: ");
+            int depth = int.Parse(Console.ReadLine()!);
+
+            List<string> analysis = await engine.AnalyzeAsync(replay.CurrentFen, depth);
+
+            foreach (string line in analysis)
+            {
+                Console.WriteLine(line);
             }
 
         }

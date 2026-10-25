@@ -11,4 +11,8 @@
 		<None Update="Engines/stockfish.exe" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="ChessLite" Version="1.0.0-alpha.11" />
+	</ItemGroup>
+
 </Project>

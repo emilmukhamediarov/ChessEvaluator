@@ -12,6 +12,7 @@ namespace ChessEvaluator
         public ChessComClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("ChessEvaluator/1.0 (contact: emile.programmer@gmail.com)");
         }
 
         public async Task<string> GetGamesAsync(string username, int year, int month)
